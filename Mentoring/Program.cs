@@ -1,3 +1,5 @@
+using Mentoring.Models;
+
 namespace Mentoring
 {
     public class Program
@@ -5,6 +7,8 @@ namespace Mentoring
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddSingleton<NorthwindContext>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -19,6 +23,8 @@ namespace Mentoring
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            var services = app.Services;
 
             app.UseAuthorization();
 
