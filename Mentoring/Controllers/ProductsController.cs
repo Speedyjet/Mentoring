@@ -11,17 +11,25 @@ namespace Mentoring.Controllers
 {
     public class ProductsController : Controller
     {
+        private readonly IConfiguration Configuration;
+        private readonly ILogger<HomeController> _logger;
         private readonly NorthwindContext _context;
+        private readonly int MaxProductsToShow;
 
-        public ProductsController(NorthwindContext context)
+        public ProductsController(NorthwindContext context, IConfiguration configuration, ILogger<HomeController> logger)
         {
+            _logger = logger;
             _context = context;
+            Configuration = configuration;
+            if (!int.TryParse(configuration.GetRequiredSection(nameof(MaxProductsToShow)).Value, out MaxProductsToShow)) {
+                logger.Log(LogLevel.Warning, "Cannot read the maximum amout of products to show");
+            }
         }
 
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var northwindContext = _context.Products.Include(p => p.Category).Include(p => p.Supplier);
+            var northwindContext = _context.Products.Include(p => p.Category).Include(p => p.Supplier).Take(MaxProductsToShow);
             return View(await northwindContext.ToListAsync());
         }
 
@@ -48,8 +56,8 @@ namespace Mentoring.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId");
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "SupplierId");
+            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName).ToList());;
+            ViewData["Supplier"] = new SelectList(_context.Suppliers.Select(x => x.CompanyName));
             return View();
         }
 

@@ -15,6 +15,7 @@ namespace Mentoring.Models
 
         [Display(Name = "Category")]
         public string CategoryName { get; set; } = null!;
+
         [Display(Name = "Description")]
         public string? Description { get; set; }
         public byte[]? Picture { get; set; }
