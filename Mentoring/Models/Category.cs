@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Mentoring.Models
 {
@@ -11,7 +12,10 @@ namespace Mentoring.Models
         }
 
         public int CategoryId { get; set; }
+
+        [Display(Name = "Category")]
         public string CategoryName { get; set; } = null!;
+        [Display(Name = "Description")]
         public string? Description { get; set; }
         public byte[]? Picture { get; set; }
 

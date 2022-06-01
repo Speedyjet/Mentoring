@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Mentoring.Models.Category>
 
 @{
-    Layout = null;
+    Layout = "_Layout";
 }
 
 <!DOCTYPE html>
@@ -24,9 +24,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Description)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Picture)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -39,9 +36,10 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
-            <td>
+            @*<td> TODO: check what's wrong with images
+                <img src="url('data:imgage/jpg;base64'@{Html.DisplayFor(modelItem => item.Picture);})"/>
                 @Html.DisplayFor(modelItem => item.Picture)
-            </td>
+            </td>*@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.CategoryId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.CategoryId">Details</a> |
