@@ -56,7 +56,7 @@ namespace Mentoring.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName).ToList());;
+            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName));;
             ViewData["Supplier"] = new SelectList(_context.Suppliers.Select(x => x.CompanyName));
             return View();
         }
@@ -66,7 +66,8 @@ namespace Mentoring.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice,UnitsInStock,UnitsOnOrder,ReorderLevel,Discontinued")] Product product)
+        public async Task<IActionResult> Create([Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice," +
+            "UnitsInStock,UnitsOnOrder,ReorderLevel,Discontinued")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -74,8 +75,8 @@ namespace Mentoring.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", product.CategoryId);
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "SupplierId", product.SupplierId);
+            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName));;
+            ViewData["Supplier"] = new SelectList(_context.Suppliers.Select(x => x.CompanyName));
             return View(product);
         }
 
@@ -92,8 +93,8 @@ namespace Mentoring.Controllers
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", product.CategoryId);
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "SupplierId", product.SupplierId);
+            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName), product.CategoryId);
+            ViewData["Supplier"] = new SelectList(_context.Suppliers.Select(x => x.CompanyName), product.SupplierId);
             return View(product);
         }
 

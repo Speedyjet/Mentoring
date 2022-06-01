@@ -14,11 +14,13 @@ namespace Mentoring.Models
         public int ProductId { get; set; }
 
         [Display(Name = "Product name")]
+        [Required(ErrorMessage = "Please provide a valid product name")]
         public string ProductName { get; set; } = null!;
         public int? SupplierId { get; set; }
         public int? CategoryId { get; set; }
 
         [Display(Name = "Quantity per unit")]
+        [Required(ErrorMessage = "Please provide a valid quantity per unit")]
         public string? QuantityPerUnit { get; set; }
 
         [Display(Name = "Unit price")]
