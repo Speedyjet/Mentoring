@@ -15,15 +15,20 @@ namespace Mentoring.Models
 
         [Display(Name = "Product name")]
         [Required(ErrorMessage = "Please provide a valid product name")]
+        [MinLength(1)]
+        [MaxLength(20)]
         public string ProductName { get; set; } = null!;
         public int? SupplierId { get; set; }
         public int? CategoryId { get; set; }
 
         [Display(Name = "Quantity per unit")]
         [Required(ErrorMessage = "Please provide a valid quantity per unit")]
+        [MinLength(1)]
+        [MaxLength(20)]
         public string? QuantityPerUnit { get; set; }
 
         [Display(Name = "Unit price")]
+        [Required(ErrorMessage = "Please provide a valid price per unit")]
         public decimal? UnitPrice { get; set; }
 
         [Display(Name = "Units in stock")]
