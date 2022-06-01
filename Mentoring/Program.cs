@@ -24,8 +24,6 @@ namespace Mentoring
 
             app.UseRouting();
 
-            var services = app.Services;
-
             app.UseAuthorization();
 
             app.MapControllerRoute(
