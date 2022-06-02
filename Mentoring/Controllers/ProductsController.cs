@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Mentoring.Models;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace Mentoring.Controllers
 {
@@ -21,9 +18,12 @@ namespace Mentoring.Controllers
             _logger = logger;
             _context = context;
             Configuration = configuration;
+            logger.Log(LogLevel.Information, "Products controller is running");
             if (!int.TryParse(configuration.GetRequiredSection(nameof(MaxProductsToShow)).Value, out MaxProductsToShow)) {
                 logger.Log(LogLevel.Warning, "Cannot read the maximum amout of products to show");
             }
+            logger.Log(LogLevel.Information, $"MaxProductsToShow is set to {MaxProductsToShow}");
+            logger.LogInformation($"The application location is {configuration.GetValue<string>(WebHostDefaults.ContentRootKey)}");
         }
 
         // GET: Products
@@ -173,6 +173,15 @@ namespace Mentoring.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        public IActionResult Error()
+        {
+            var feature = HttpContext.Features.Get<IExceptionHandlerFeature>();
+            var exception = feature?.Error;
+            _logger.LogError("Server throws an exception", exception);
+            return View("~/Views/Shared/Error.cshtml", exception);
+        }
+
 
         private bool ProductExists(int id)
         {

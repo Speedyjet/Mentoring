@@ -1,18 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Mentoring.Models;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace Mentoring.Controllers
 {
     public class CategoriesController : Controller
     {
+        private readonly IConfiguration _configuration;
         private readonly NorthwindContext _context;
         private readonly ILogger<CategoriesController> _logger;
 
-        public CategoriesController(NorthwindContext context, ILogger<CategoriesController> logger)
+        public CategoriesController(IConfiguration configuration, NorthwindContext context, ILogger<CategoriesController> logger)
         {
+            _configuration = configuration;
             _logger = logger;
             _context = context;
+            logger.LogInformation($"The application location is {configuration.GetValue<string>(WebHostDefaults.ContentRootKey)}");
+
         }
 
         // GET: Categories
@@ -155,6 +160,14 @@ namespace Mentoring.Controllers
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Error()
+        {
+            var feature = HttpContext.Features.Get<IExceptionHandlerFeature>();
+            var exception = feature?.Error;
+            _logger.LogError("Server throws an exception", exception);
+            return View("~/Views/Shared/Error.cshtml", exception);
         }
 
         private bool CategoryExists(int id)

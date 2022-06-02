@@ -1,4 +1,5 @@
 ﻿using Mentoring.Models;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -26,7 +27,10 @@ namespace Mentoring.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var feature = HttpContext.Features.Get<IExceptionHandlerFeature>();
+            var exception = feature?.Error;
+            _logger.LogError("Oops!", exception);
+            return View("~/Views/Shared/Error.cshtml", exception);
         }
     }
 }
