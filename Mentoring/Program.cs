@@ -1,5 +1,6 @@
 using Mentoring.Models;
 
+// TODO: Minimum api (not related to any of tasks)
 namespace Mentoring
 {
     public class Program
@@ -8,7 +9,10 @@ namespace Mentoring
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // TODO: t1 should be AddDbContext with appropriate options e.g. UseSqlServer
             builder.Services.AddSingleton<NorthwindContext>();
+            // ex. builder.Services.AddDbContext<NorthwindContext>(
+            // options => options.UseSqlServer(builder.Configuration.GetConnectionString("NorthWindConnectionExpress")));
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

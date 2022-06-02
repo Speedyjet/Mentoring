@@ -21,7 +21,9 @@ namespace Mentoring.Controllers
             _logger = logger;
             _context = context;
             Configuration = configuration;
-            if (!int.TryParse(configuration.GetRequiredSection(nameof(MaxProductsToShow)).Value, out MaxProductsToShow)) {
+            // TODO: Options mapping? Not related to any tasks
+            if (!int.TryParse(configuration.GetRequiredSection(nameof(MaxProductsToShow)).Value, out MaxProductsToShow))
+            {
                 logger.Log(LogLevel.Warning, "Cannot read the maximum amout of products to show");
             }
         }
@@ -29,7 +31,11 @@ namespace Mentoring.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var northwindContext = _context.Products.Include(p => p.Category).Include(p => p.Supplier).Take(MaxProductsToShow);
+            var northwindContext = _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Supplier)
+                // TODO: t2 What if the MaxProductsToShow equal to 0? Based on requirements it should display full set of data 
+                .Take(MaxProductsToShow);
             return View(await northwindContext.ToListAsync());
         }
 
@@ -56,7 +62,7 @@ namespace Mentoring.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName));;
+            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName)); ;
             ViewData["Supplier"] = new SelectList(_context.Suppliers.Select(x => x.CompanyName));
             return View();
         }
@@ -75,7 +81,7 @@ namespace Mentoring.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName));;
+            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName)); ;
             ViewData["Supplier"] = new SelectList(_context.Suppliers.Select(x => x.CompanyName));
             return View(product);
         }
@@ -93,6 +99,7 @@ namespace Mentoring.Controllers
             {
                 return NotFound();
             }
+            // TODO: t3 After receiving server-side error will not pop up the display values for select
             ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName), product.CategoryId);
             ViewData["Supplier"] = new SelectList(_context.Suppliers.Select(x => x.CompanyName), product.SupplierId);
             return View(product);
@@ -105,6 +112,8 @@ namespace Mentoring.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice,UnitsInStock,UnitsOnOrder,ReorderLevel,Discontinued")] Product product)
         {
+            // TODO: t3 faced some weird db issues
+            // TODO: t3 faced issues with numbers (could be related to my pc culture) https://www.google.com/url?q=https://metanit.com/sharp/mvc5/24.7.php&sa=D&source=editors&ust=1654169461666492&usg=AOvVaw3u6awKlwYyJoIBpJdIIo_E
             if (id != product.ProductId)
             {
                 return NotFound();
@@ -169,14 +178,14 @@ namespace Mentoring.Controllers
             {
                 _context.Products.Remove(product);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProductExists(int id)
         {
-          return (_context.Products?.Any(e => e.ProductId == id)).GetValueOrDefault();
+            return (_context.Products?.Any(e => e.ProductId == id)).GetValueOrDefault();
         }
     }
 }
