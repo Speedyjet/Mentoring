@@ -1,13 +1,20 @@
 using Mentoring.Models;
+using Microsoft.Extensions.Logging;
 
 // TODO: Minimum api (not related to any of tasks)
 namespace Mentoring
 {
     public class Program
     {
+        
+        private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public static void Main(string[] args)
         {
+            _log.Info("Starting application");
             var builder = WebApplication.CreateBuilder(args);
+            _log.Info("Builder created");
+
+            builder.Logging.AddLog4Net();
 
             // TODO: t1 should be AddDbContext with appropriate options e.g. UseSqlServer
             builder.Services.AddSingleton<NorthwindContext>();
