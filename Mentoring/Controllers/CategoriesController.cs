@@ -7,9 +7,11 @@ namespace Mentoring.Controllers
     public class CategoriesController : Controller
     {
         private readonly NorthwindContext _context;
+        private readonly ILogger<CategoriesController> _logger;
 
-        public CategoriesController(NorthwindContext context)
+        public CategoriesController(NorthwindContext context, ILogger<CategoriesController> logger)
         {
+            _logger = logger;
             _context = context;
         }
 
@@ -26,6 +28,7 @@ namespace Mentoring.Controllers
         {
             if (id == null || _context.Categories == null)
             {
+                _logger.Log(LogLevel.Warning, "Categories are empty");
                 return NotFound();
             }
 
@@ -33,6 +36,7 @@ namespace Mentoring.Controllers
                 .FirstOrDefaultAsync(m => m.CategoryId == id);
             if (category == null)
             {
+                _logger.Log(LogLevel.Warning, "Category not found");
                 return NotFound();
             }
 
@@ -66,6 +70,7 @@ namespace Mentoring.Controllers
         {
             if (id == null || _context.Categories == null)
             {
+                _logger.Log(LogLevel.Warning, "Cannot find category");
                 return NotFound();
             }
 
@@ -86,6 +91,7 @@ namespace Mentoring.Controllers
         {
             if (id != category.CategoryId)
             {
+                _logger.Log(LogLevel.Warning, "Cannot find category");
                 return NotFound();
             }
 
@@ -100,10 +106,12 @@ namespace Mentoring.Controllers
                 {
                     if (!CategoryExists(category.CategoryId))
                     {
+                        _logger.Log(LogLevel.Warning, "Cannot find category");
                         return NotFound();
                     }
                     else
                     {
+                        _logger.LogError("Something went wrong");
                         throw;
                     }
                 }
