@@ -30,10 +30,12 @@ namespace Mentoring.Controllers
         public async Task<IActionResult> Index()
         {
             var northwindContext = _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.Supplier)
-                // TODO: t2 What if the MaxProductsToShow equal to 0? Based on requirements it should display full set of data 
-                .Take(MaxProductsToShow);
+                    .Include(p => p.Category)
+                    .Include(p => p.Supplier);
+            if (MaxProductsToShow > 0)
+            {
+                return View(await northwindContext.Take(MaxProductsToShow).ToListAsync());
+            }
             return View(await northwindContext.ToListAsync());
         }
 
