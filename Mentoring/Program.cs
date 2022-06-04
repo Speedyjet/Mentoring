@@ -1,5 +1,6 @@
 using Mentoring.Models;
-using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 // TODO: Minimum api (not related to any of tasks)
 namespace Mentoring
@@ -13,13 +14,9 @@ namespace Mentoring
             _log.Info("Starting application");
             var builder = WebApplication.CreateBuilder(args);
             _log.Info("Builder created");
-
             builder.Logging.AddLog4Net();
-
-            // TODO: t1 should be AddDbContext with appropriate options e.g. UseSqlServer
-            builder.Services.AddSingleton<NorthwindContext>();
-            // ex. builder.Services.AddDbContext<NorthwindContext>(
-            // options => options.UseSqlServer(builder.Configuration.GetConnectionString("NorthWindConnectionExpress")));
+            builder.Services.AddDbContext<NorthwindContext>(options => options.UseSqlServer(
+                builder.Configuration.GetSection("ConnectionStrings").Value));
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
