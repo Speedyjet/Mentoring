@@ -34,7 +34,7 @@ namespace Mentoring.Controllers
                     .Include(p => p.Supplier);
             if (MaxProductsToShow > 0)
             {
-                return View(await northwindContext.Take(MaxProductsToShow).ToListAsync());
+                return View(await northwindContext.Take(MaxProductsToShow).OrderBy(x => x.ProductName).ToListAsync());
             }
             return View(await northwindContext.ToListAsync());
         }
@@ -72,9 +72,11 @@ namespace Mentoring.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice," +
+        public async Task<IActionResult> Create([Bind("ProductId,ProductName,Supplier,Category,QuantityPerUnit,UnitPrice," +
             "UnitsInStock,UnitsOnOrder,ReorderLevel,Discontinued")] Product product)
         {
+            product.CategoryId = _context.Categories.FirstOrDefault(x => x.CategoryName == product.Category.CategoryName).CategoryId;
+            product.SupplierId = _context.Suppliers.FirstOrDefault(x => x.CompanyName == product.Supplier.CompanyName).SupplierId;
             if (ModelState.IsValid)
             {
                 _context.Add(product);
@@ -110,10 +112,8 @@ namespace Mentoring.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice,UnitsInStock,UnitsOnOrder,ReorderLevel,Discontinued")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,Supplier,Category,QuantityPerUnit,UnitPrice,UnitsInStock,UnitsOnOrder,ReorderLevel,Discontinued")] Product product)
         {
-            // TODO: t3 faced some weird db issues
-            // TODO: t3 faced issues with numbers (could be related to my pc culture) https://www.google.com/url?q=https://metanit.com/sharp/mvc5/24.7.php&sa=D&source=editors&ust=1654169461666492&usg=AOvVaw3u6awKlwYyJoIBpJdIIo_E
             if (id != product.ProductId)
             {
                 return NotFound();
@@ -139,8 +139,8 @@ namespace Mentoring.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", product.CategoryId);
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "SupplierId", product.SupplierId);
+            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName), product.CategoryId);
+            ViewData["Supplier"] = new SelectList(_context.Suppliers.Select(x => x.CompanyName), product.SupplierId);
             return View(product);
         }
 

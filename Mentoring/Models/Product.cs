@@ -23,6 +23,7 @@ namespace Mentoring.Models
 
         [Display(Name = "Quantity per unit")]
         [Required(ErrorMessage = "Please provide a valid quantity per unit")]
+        [RegularExpression(@"^\d+$", ErrorMessage = "Numbers only")]
         [MinLength(1)]
         [MaxLength(20)]
         public string? QuantityPerUnit { get; set; }
