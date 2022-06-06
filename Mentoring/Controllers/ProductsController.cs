@@ -29,7 +29,13 @@ namespace Mentoring.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var northwindContext = _context.Products.Include(p => p.Category).Include(p => p.Supplier).Take(MaxProductsToShow);
+            var northwindContext = _context.Products
+                    .Include(p => p.Category)
+                    .Include(p => p.Supplier);
+            if (MaxProductsToShow > 0)
+            {
+                return View(await northwindContext.Take(MaxProductsToShow).OrderBy(x => x.ProductName).ToListAsync());
+            }
             return View(await northwindContext.ToListAsync());
         }
 
@@ -56,7 +62,7 @@ namespace Mentoring.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName));;
+            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName)); ;
             ViewData["Supplier"] = new SelectList(_context.Suppliers.Select(x => x.CompanyName));
             return View();
         }
@@ -66,16 +72,18 @@ namespace Mentoring.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice," +
+        public async Task<IActionResult> Create([Bind("ProductId,ProductName,Supplier,Category,QuantityPerUnit,UnitPrice," +
             "UnitsInStock,UnitsOnOrder,ReorderLevel,Discontinued")] Product product)
         {
+            product.CategoryId = _context.Categories.FirstOrDefault(x => x.CategoryName == product.Category.CategoryName).CategoryId;
+            product.SupplierId = _context.Suppliers.FirstOrDefault(x => x.CompanyName == product.Supplier.CompanyName).SupplierId;
             if (ModelState.IsValid)
             {
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName));;
+            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName)); ;
             ViewData["Supplier"] = new SelectList(_context.Suppliers.Select(x => x.CompanyName));
             return View(product);
         }
@@ -93,6 +101,7 @@ namespace Mentoring.Controllers
             {
                 return NotFound();
             }
+            // TODO: t3 After receiving server-side error will not pop up the display values for select
             ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName), product.CategoryId);
             ViewData["Supplier"] = new SelectList(_context.Suppliers.Select(x => x.CompanyName), product.SupplierId);
             return View(product);
@@ -103,7 +112,7 @@ namespace Mentoring.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice,UnitsInStock,UnitsOnOrder,ReorderLevel,Discontinued")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,Supplier,Category,QuantityPerUnit,UnitPrice,UnitsInStock,UnitsOnOrder,ReorderLevel,Discontinued")] Product product)
         {
             if (id != product.ProductId)
             {
@@ -130,8 +139,8 @@ namespace Mentoring.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", product.CategoryId);
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "SupplierId", product.SupplierId);
+            ViewData["Category"] = new SelectList(_context.Categories.Select(x => x.CategoryName), product.CategoryId);
+            ViewData["Supplier"] = new SelectList(_context.Suppliers.Select(x => x.CompanyName), product.SupplierId);
             return View(product);
         }
 
@@ -169,7 +178,7 @@ namespace Mentoring.Controllers
             {
                 _context.Products.Remove(product);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -185,7 +194,7 @@ namespace Mentoring.Controllers
 
         private bool ProductExists(int id)
         {
-          return (_context.Products?.Any(e => e.ProductId == id)).GetValueOrDefault();
+            return (_context.Products?.Any(e => e.ProductId == id)).GetValueOrDefault();
         }
     }
 }

@@ -22,7 +22,6 @@ namespace Mentoring.Models
         public int? CategoryId { get; set; }
 
         [Display(Name = "Quantity per unit")]
-        [Required(ErrorMessage = "Please provide a valid quantity per unit")]
         [MinLength(1)]
         [MaxLength(20)]
         public string? QuantityPerUnit { get; set; }
