@@ -39,6 +39,16 @@ namespace Mentoring.BL
             return null;
         }
 
+        async Task<byte[]> IBusinessLogic.GetImageById(int id)
+        {
+            var category = await _context.Categories.FirstOrDefaultAsync(x => x.CategoryId == id);
+            if (category?.Picture == null)
+            {
+                return null;
+            }
+            return category.Picture.ToArray();
+        }
+
         public async Task RemoveCategory(Category category)
         {
             _context.Remove(category);

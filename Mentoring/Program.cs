@@ -24,4 +24,9 @@ builder.Services.AddTransient<IBusinessLogic, BusinessLogic>();
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}");
 
-    app.Run();
+    app.MapControllerRoute(
+        name: "images",
+        pattern: "images/{id}",
+        defaults: new { controller = "Categories", action = "GetImage", });
+
+app.Run();

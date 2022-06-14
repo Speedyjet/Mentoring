@@ -137,6 +137,11 @@ namespace Mentoring.Controllers
             return View(currentCategory);
         }
 
+        public async Task<byte[]> GetImage(int id)
+        {
+            return await _businessLogic.GetImageById(id);
+        }
+
         // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
