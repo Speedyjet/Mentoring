@@ -96,23 +96,32 @@ namespace Mentoring.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CategoryId,CategoryName,Description,Picture")] Category category)
+        public async Task<IActionResult> Edit(int id, [Bind("CategoryId,CategoryName,Description,Picture")] CategoryDTO categoryDto)
         {
-            if (id != category.CategoryId)
+            if (!_businessLogic.CategoryExists(id))
             {
                 _logger.Log(LogLevel.Warning, "Cannot find category");
                 return NotFound();
             }
-
+            
+            var currentCategory = await _businessLogic.GetCategory(id);
+            byte[]? imageData = null;
+            using (var binaryReader = new BinaryReader(categoryDto.Picture.OpenReadStream()))
+            {
+                imageData = binaryReader.ReadBytes((int)categoryDto.Picture.Length);
+            }
+            currentCategory.Picture = imageData;
+            
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _businessLogic.UpdateCategory(category);
+
+                    await _businessLogic.UpdateCategory(currentCategory);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(category.CategoryId))
+                    if (!CategoryExists(id))
                     {
                         _logger.Log(LogLevel.Warning, "Cannot find category");
                         return NotFound();
