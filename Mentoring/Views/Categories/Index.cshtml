@@ -37,17 +37,24 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                        @{
-                            string base64 = string.Empty;
-                            var correctArray = new List<byte>();
-                            var imageArray = item.Picture;
-                            if (imageArray != null)
-                            {
-                                correctArray = imageArray.ToList();
-                                correctArray = correctArray.Skip(78).ToList();
-                                base64 = Convert.ToBase64String(correctArray.ToArray());
-                            }
-                    <img src="data:image/bmp;base64,@base64"/>
+                @{
+                    string base64 = string.Empty;
+                    var correctArray = new List<byte>();
+                    var imageArray = item.Picture;
+                    if (imageArray != null)
+                    {
+                        correctArray = imageArray.ToList();
+                        correctArray = correctArray.Skip(78).ToList();
+                        base64 = Convert.ToBase64String(correctArray.ToArray());
+                    }
+                    if (!string.IsNullOrEmpty(base64))
+                    {
+                        <img src="data:image/bmp;base64,@base64"/>
+                    }
+                    else
+                    {
+                        <div>No image available</div>
+                    }
                 }
             </td>
             <td>
