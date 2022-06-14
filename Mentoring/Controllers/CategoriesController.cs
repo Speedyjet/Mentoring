@@ -10,7 +10,6 @@ namespace Mentoring.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IBusinessLogic _businessLogic;
-        //private readonly NorthwindContext _context;
         private readonly ILogger<CategoriesController> _logger;
 
         public CategoriesController(IBusinessLogic businessLogic, IConfiguration configuration, NorthwindContext context, ILogger<CategoriesController> logger)
@@ -18,10 +17,16 @@ namespace Mentoring.Controllers
             _businessLogic = businessLogic;
             _configuration = configuration;
             _logger = logger;
-            //_context = context;
             logger.LogInformation($"The application location is {configuration.GetValue<string>(WebHostDefaults.ContentRootKey)}");
 
         }
+
+        //public CategoriesController(IBusinessLogic buisinessLogic)
+        //{
+        //    _businessLogic = buisinessLogic;
+        //}
+
+        //TODO add get image controller
 
         // GET: Categories
         public async Task<IActionResult> Index()
@@ -120,7 +125,7 @@ namespace Mentoring.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            return View(currentCategory);
         }
 
         // GET: Categories/Delete/5
