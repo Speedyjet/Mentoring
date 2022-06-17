@@ -4,6 +4,31 @@ namespace Mentoring.BL
 {
     public class HddCache : IHddCache
     {
+        private readonly IConfiguration _configuration;
+        public HddCache(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            CheckCacheExpiration();
+        }
+
+        private void CheckCacheExpiration()
+        {
+            foreach (var file in Directory.GetFiles(Directory.GetCurrentDirectory()))
+            {
+                if (file.StartsWith("image"))
+                {
+                    var expirationSpan = double.Parse(_configuration.GetSection("cacheExpiration").Value) * -1;
+                    Console.WriteLine("expiration span {0}", expirationSpan);
+                    var fileInfo = new FileInfo(file);
+                    var creationDate = fileInfo.CreationTimeUtc;
+                    if (DateTime.UtcNow.AddMinutes(expirationSpan) > creationDate)
+                    {
+                        File.Delete(file);
+                    }
+                }
+            }
+        }
+
         public ICacheEntry CreateEntry(object key)
         {
             throw new NotImplementedException();
@@ -15,7 +40,10 @@ namespace Mentoring.BL
 
         public void Remove(object key)
         {
-            throw new NotImplementedException();
+            if (key != null && File.Exists($"image{key}"))
+            {
+                File.Delete($"image{key}");
+            }
         }
 
         public void SaveItem(int id, byte[] imageData)

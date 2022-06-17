@@ -21,13 +21,6 @@ namespace Mentoring.Controllers
 
         }
 
-        //public CategoriesController(IBusinessLogic buisinessLogic)
-        //{
-        //    _businessLogic = buisinessLogic;
-        //}
-
-        //TODO add get image controller
-
         // GET: Categories
         public async Task<IActionResult> Index()
         {
@@ -171,7 +164,7 @@ namespace Mentoring.Controllers
             var category = await _businessLogic.GetCategory(id);
             if (category != null)
             {
-                _businessLogic.RemoveCategory(category);
+                await _businessLogic.RemoveCategory(category);
             }
             
             return RedirectToAction(nameof(Index));

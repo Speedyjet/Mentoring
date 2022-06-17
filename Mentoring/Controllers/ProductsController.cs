@@ -8,7 +8,7 @@ namespace Mentoring.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly IConfiguration Configuration;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<HomeController> _logger;
         private readonly NorthwindContext _context;
         private readonly int MaxProductsToShow;
@@ -17,9 +17,9 @@ namespace Mentoring.Controllers
         {
             _logger = logger;
             _context = context;
-            Configuration = configuration;
+            _configuration = configuration;
             logger.Log(LogLevel.Information, "Products controller is running");
-            if (!int.TryParse(configuration.GetRequiredSection(nameof(MaxProductsToShow)).Value, out MaxProductsToShow)) {
+            if (!int.TryParse(_configuration.GetRequiredSection(nameof(MaxProductsToShow)).Value, out MaxProductsToShow)) {
                 logger.Log(LogLevel.Warning, "Cannot read the maximum amout of products to show");
             }
             logger.Log(LogLevel.Information, $"MaxProductsToShow is set to {MaxProductsToShow}");
