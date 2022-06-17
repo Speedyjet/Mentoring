@@ -17,7 +17,7 @@ namespace Mentoring.BL
             {
                 if (file.StartsWith("image"))
                 {
-                    var expirationSpan = double.Parse(_configuration.GetSection("cacheExpiration").Value) * -1;
+                    var expirationSpan = double.Parse(_configuration.GetSection("CacheExpiration").Value) * -1;
                     Console.WriteLine("expiration span {0}", expirationSpan);
                     var fileInfo = new FileInfo(file);
                     var creationDate = fileInfo.CreationTimeUtc;
@@ -48,7 +48,27 @@ namespace Mentoring.BL
 
         public void SaveItem(int id, byte[] imageData)
         {
-            using(var stream = new FileStream($"image{id}", FileMode.CreateNew, FileAccess.Write))
+            var fileNames = Directory.GetFiles(Directory.GetCurrentDirectory());
+            var imagesCount = fileNames.Where(x => x.StartsWith("image")).Count();
+            if (imagesCount >= int.Parse(_configuration.GetSection("MaxImagesOnCache").Value))
+            {
+                DateTime minDate = DateTime.MinValue;
+                string? oldestFileName = null;
+                foreach (var fileName in fileNames)
+                {
+                    var fileInfo = new FileInfo(fileName);
+                    if (fileInfo.CreationTimeUtc < minDate)
+                    {
+                        minDate = fileInfo.CreationTimeUtc;
+                        oldestFileName = fileName;
+                    }
+                }
+                if (!string.IsNullOrEmpty(oldestFileName))
+                {
+                    File.Delete(oldestFileName);
+                }
+            }
+            using (var stream = new FileStream($"image{id}", FileMode.CreateNew, FileAccess.Write))
             {
                 stream.Write(imageData, 0, imageData.Length);
             }
