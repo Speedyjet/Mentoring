@@ -6,13 +6,13 @@ namespace Mentoring.BL
 {
     public class BusinessLogic : IBusinessLogic
     {
-        private readonly IMemoryCache _memoryCache;
+        private readonly IHddCache _hddCache;
         private readonly NorthwindContext _context;
         private readonly ILogger<BusinessLogic> _logger;
 
-        public BusinessLogic(NorthwindContext context, ILogger<BusinessLogic> logger, IMemoryCache memoryCache)
+        public BusinessLogic(NorthwindContext context, ILogger<BusinessLogic> logger, IHddCache hddCache)
         {
-            _memoryCache = memoryCache;
+            _hddCache = hddCache;
             _context = context;
             _logger = logger;
         }
@@ -45,7 +45,7 @@ namespace Mentoring.BL
          async Task<byte[]?> IBusinessLogic.GetImageById(int id)
         {
             byte[]? imageData = null;
-            if (_memoryCache.TryGetValue(id, out imageData))
+            if (_hddCache.TryGetValue(id, out imageData))
             {
                 return imageData;
             }
@@ -57,7 +57,7 @@ namespace Mentoring.BL
                     return null;
                 }
                 imageData = category.Picture.ToArray();
-                _memoryCache.Set(id, imageData, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+                _hddCache.SaveItem(id, imageData);//, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
                 return imageData;
             }
         }

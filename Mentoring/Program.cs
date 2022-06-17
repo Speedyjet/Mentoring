@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
     builder.Services.AddDbContext<NorthwindContext>(options => options.UseSqlServer(
     builder.Configuration.GetSection("ConnectionStrings").Value));
     builder.Services.AddControllersWithViews();
-    builder.Services.AddMemoryCache();
     builder.Services.AddTransient<IBusinessLogic, BusinessLogic>();
+    builder.Services.AddTransient<IHddCache, HddCache>();
 
     var app = builder.Build();
 
