@@ -6,21 +6,29 @@ namespace Mentoring.Controllers
     internal class ToBeLoggedFilter : Attribute, IActionFilter
     {
         ILogger _logger = new LoggerFactory().CreateLogger(typeof(ToBeLoggedFilter));
+        private bool _need2log;
 
         public ToBeLoggedFilter(bool need2Log = false)
         {
+            _need2log = need2Log;
         }
 
         public bool V = false;
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            _logger.LogInformation("Action is about to finish");
+            if (_need2log)
+            {
+                _logger.LogInformation("Action is about to finish");
+            }
         }
 
         void IActionFilter.OnActionExecuting(ActionExecutingContext context)
         {
-            _logger.LogInformation("Action is running");
+            if (_need2log)
+            {
+                _logger.LogInformation("Action is running");
+            }
         }
     }
 }
