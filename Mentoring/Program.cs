@@ -4,9 +4,10 @@ using Microsoft.EntityFrameworkCore;
     var builder = WebApplication.CreateBuilder(args);
     builder.Logging.AddLog4Net();
     builder.Services.AddDbContext<NorthwindContext>(options => options.UseSqlServer(
-        builder.Configuration.GetSection("ConnectionStrings").Value));
+    builder.Configuration.GetSection("ConnectionStrings").Value));
     builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<IBusinessLogic, BusinessLogic>();
+    builder.Services.AddMemoryCache();
+    builder.Services.AddTransient<IBusinessLogic, BusinessLogic>();
 
     var app = builder.Build();
 
@@ -27,6 +28,6 @@ builder.Services.AddTransient<IBusinessLogic, BusinessLogic>();
     app.MapControllerRoute(
         name: "images",
         pattern: "images/{id}",
-        defaults: new { controller = "Categories", action = "GetImage", });
+        defaults: new { controller = "Categories", action = "GetImageById", });
 
 app.Run();

@@ -1,4 +1,7 @@
-﻿@model IEnumerable<Mentoring.Models.Category>
+﻿@using Mentoring.BL
+@using Mentoring.Controllers
+
+@model IEnumerable<Mentoring.Models.Category>
 
 @{
     Layout = "_Layout";
@@ -37,24 +40,26 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                @{
-                    string base64 = string.Empty;
-                    var correctArray = new List<byte>();
-                    var imageArray = item.Picture;
-                    if (imageArray != null)
-                    {
-                        correctArray = imageArray.ToList();
-                        base64 = Convert.ToBase64String(correctArray.ToArray());
-                    }
-                    if (!string.IsNullOrEmpty(base64))
-                    {
-                        <img src="data:image/bmp;base64,@base64"/>
-                    }
-                    else
-                    {
-                        <div>No image available</div>
-                    }
-                }
+                        @{
+                            string base64 = string.Empty;
+                            var correctArray = new List<byte>();
+                            var categoryId = item.CategoryId;
+                            //var imageByteArray = GetImageById(item.CategoryId);
+                            var imageArray = item.Picture;
+                            if (imageArray != null)
+                            {
+                                correctArray = imageArray.ToList();
+                                base64 = Convert.ToBase64String(correctArray.ToArray());
+                            }
+                            if (!string.IsNullOrEmpty(base64))
+                            {
+                                <img src="data:image/bmp;base64,@base64"/>
+                            }
+                            else
+                            {
+                                <div>No image available</div>
+                            }
+                        }
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.CategoryId">Edit</a> |

@@ -137,7 +137,7 @@ namespace Mentoring.Controllers
             return View(currentCategory);
         }
 
-        public async Task<byte[]> GetImage(int id)
+        public async Task<byte[]> GetImageById(int id)
         {
             return await _businessLogic.GetImageById(id);
         }

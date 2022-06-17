@@ -1,15 +1,18 @@
 ﻿using Mentoring.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Mentoring.BL
 {
     public class BusinessLogic : IBusinessLogic
     {
+        private readonly IMemoryCache _memoryCache;
         private readonly NorthwindContext _context;
         private readonly ILogger<BusinessLogic> _logger;
 
-        public BusinessLogic(NorthwindContext context, ILogger<BusinessLogic> logger)
+        public BusinessLogic(NorthwindContext context, ILogger<BusinessLogic> logger, IMemoryCache memoryCache)
         {
+            _memoryCache = memoryCache;
             _context = context;
             _logger = logger;
         }
@@ -39,14 +42,24 @@ namespace Mentoring.BL
             return null;
         }
 
-        async Task<byte[]> IBusinessLogic.GetImageById(int id)
+         async Task<byte[]?> IBusinessLogic.GetImageById(int id)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(x => x.CategoryId == id);
-            if (category?.Picture == null)
+            byte[]? imageData = null;
+            if (_memoryCache.TryGetValue(id, out imageData))
             {
-                return null;
+                return imageData;
             }
-            return category.Picture.ToArray();
+            else
+            {
+                var category = await _context.Categories.FirstOrDefaultAsync(x => x.CategoryId == id);
+                if (category?.Picture == null)
+                {
+                    return null;
+                }
+                imageData = category.Picture.ToArray();
+                _memoryCache.Set(id, imageData, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(5)));
+                return imageData;
+            }
         }
 
         public async Task RemoveCategory(Category category)
