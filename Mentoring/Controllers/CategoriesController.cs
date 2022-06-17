@@ -22,6 +22,7 @@ namespace Mentoring.Controllers
         }
 
         // GET: Categories
+        [ToBeLoggedFilter(true)]
         public async Task<IActionResult> Index()
         {
             return View(await _businessLogic.GetCategories());

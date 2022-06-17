@@ -1,7 +1,9 @@
 using Mentoring.Models;
 using Mentoring.BL;
 using Microsoft.EntityFrameworkCore;
-    var builder = WebApplication.CreateBuilder(args);
+using Mentoring.Controllers;
+
+var builder = WebApplication.CreateBuilder(args);
     builder.Logging.AddLog4Net();
     builder.Services.AddDbContext<NorthwindContext>(options => options.UseSqlServer(
     builder.Configuration.GetSection("ConnectionStrings").Value));
