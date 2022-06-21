@@ -2,43 +2,42 @@
 using Microsoft.EntityFrameworkCore;
 using Mentoring.Models;
 using Microsoft.AspNetCore.Diagnostics;
+using Mentoring.BL;
 
 namespace Mentoring.Controllers
 {
     public class CategoriesController : Controller
     {
         private readonly IConfiguration _configuration;
-        private readonly NorthwindContext _context;
+        private readonly IBusinessLogic _businessLogic;
         private readonly ILogger<CategoriesController> _logger;
 
-        public CategoriesController(IConfiguration configuration, NorthwindContext context, ILogger<CategoriesController> logger)
+        public CategoriesController(IBusinessLogic businessLogic, IConfiguration configuration, NorthwindContext context, ILogger<CategoriesController> logger)
         {
+            _businessLogic = businessLogic;
             _configuration = configuration;
             _logger = logger;
-            _context = context;
             logger.LogInformation($"The application location is {configuration.GetValue<string>(WebHostDefaults.ContentRootKey)}");
 
         }
 
         // GET: Categories
+        [ToBeLoggedFilter(true)]
         public async Task<IActionResult> Index()
         {
-              return _context.Categories != null ? 
-                          View(await _context.Categories.ToListAsync()) :
-                          Problem("Entity set 'NorthwindContext.Categories'  is null.");
+            return View(await _businessLogic.GetCategories());
         }
 
         // GET: Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null || _businessLogic.GetCategories() == null)
             {
                 _logger.Log(LogLevel.Warning, "Categories are empty");
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.CategoryId == id);
+            var category = await _businessLogic.GetCategory(id);
             if (category == null)
             {
                 _logger.Log(LogLevel.Warning, "Category not found");
@@ -63,8 +62,7 @@ namespace Mentoring.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(category);
-                await _context.SaveChangesAsync();
+                _businessLogic.AddCategory(category);
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -73,13 +71,13 @@ namespace Mentoring.Controllers
         // GET: Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null || _businessLogic.GetCategories() == null)
             {
                 _logger.Log(LogLevel.Warning, "Cannot find category");
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _businessLogic.GetCategory(id);
             if (category == null)
             {
                 return NotFound();
@@ -92,25 +90,32 @@ namespace Mentoring.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CategoryId,CategoryName,Description,Picture")] Category category)
+        public async Task<IActionResult> Edit(int id, [Bind("CategoryId,CategoryName,Description,Picture")] CategoryDTO categoryDto)
         {
-            if (id != category.CategoryId)
+            if (!_businessLogic.CategoryExists(id))
             {
                 _logger.Log(LogLevel.Warning, "Cannot find category");
                 return NotFound();
             }
-
+            
+            var currentCategory = await _businessLogic.GetCategory(id);
+            byte[]? imageData = null;
+            using (var binaryReader = new BinaryReader(categoryDto.Picture.OpenReadStream()))
+            {
+                imageData = binaryReader.ReadBytes((int)categoryDto.Picture.Length);
+            }
+            currentCategory.Picture = imageData;
+            
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(category);
-                    
-                    await _context.SaveChangesAsync();
+
+                    await _businessLogic.UpdateCategory(currentCategory);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(category.CategoryId))
+                    if (!CategoryExists(id))
                     {
                         _logger.Log(LogLevel.Warning, "Cannot find category");
                         return NotFound();
@@ -123,19 +128,23 @@ namespace Mentoring.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            return View(currentCategory);
+        }
+
+        public async Task<byte[]> GetImageById(int id)
+        {
+            return await _businessLogic.GetImageById(id);
         }
 
         // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null || _businessLogic.GetCategories() == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.CategoryId == id);
+            var category = await _businessLogic.GetCategory(id);
             if (category == null)
             {
                 return NotFound();
@@ -149,17 +158,16 @@ namespace Mentoring.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Categories == null)
+            if (_businessLogic.GetCategories() == null)
             {
                 return Problem("Entity set 'NorthwindContext.Categories'  is null.");
             }
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _businessLogic.GetCategory(id);
             if (category != null)
             {
-                _context.Categories.Remove(category);
+                await _businessLogic.RemoveCategory(category);
             }
             
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -173,7 +181,7 @@ namespace Mentoring.Controllers
 
         private bool CategoryExists(int id)
         {
-          return (_context.Categories?.Any(e => e.CategoryId == id)).GetValueOrDefault();
+            return _businessLogic.CategoryExists(id);
         }
     }
 }
