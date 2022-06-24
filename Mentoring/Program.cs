@@ -7,7 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Logging.AddLog4Net();
     builder.Services.AddDbContext<NorthwindContext>(options => options.UseSqlServer(
     builder.Configuration.GetSection("ConnectionStrings").Value));
-    builder.Services.AddControllersWithViews();
+    builder.Services.AddControllersWithViews().AddRazorOptions(option =>
+    {
+        option.ViewLocationFormats.Add("/{0}.cshtml");
+    });
     builder.Services.AddTransient<IBusinessLogic, BusinessLogic>();
     builder.Services.AddTransient<IHddCache, HddCache>();
 
