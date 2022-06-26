@@ -9,10 +9,10 @@ namespace Mentoring.Controllers
     public class CategoriesController : Controller
     {
         private readonly IConfiguration _configuration;
-        private readonly IBusinessLogic _businessLogic;
+        private readonly ICategoryService _businessLogic;
         private readonly ILogger<CategoriesController> _logger;
 
-        public CategoriesController(IBusinessLogic businessLogic, IConfiguration configuration, NorthwindContext context, ILogger<CategoriesController> logger)
+        public CategoriesController(ICategoryService businessLogic, IConfiguration configuration, NorthwindContext context, ILogger<CategoriesController> logger)
         {
             _businessLogic = businessLogic;
             _configuration = configuration;
@@ -62,7 +62,7 @@ namespace Mentoring.Controllers
         {
             if (ModelState.IsValid)
             {
-                _businessLogic.AddCategory(category);
+                await _businessLogic.AddCategory(category);
                 return RedirectToAction(nameof(Index));
             }
             return View(category);

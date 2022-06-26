@@ -4,13 +4,13 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Mentoring.BL
 {
-    public class BusinessLogic : IBusinessLogic
+    public class CategoryService : ICategoryService
     {
         private readonly IHddCache _hddCache;
         private readonly NorthwindContext _context;
-        private readonly ILogger<BusinessLogic> _logger;
+        private readonly ILogger<CategoryService> _logger;
 
-        public BusinessLogic(NorthwindContext context, ILogger<BusinessLogic> logger, IHddCache hddCache)
+        public CategoryService(NorthwindContext context, ILogger<CategoryService> logger, IHddCache hddCache)
         {
             _hddCache = hddCache;
             _context = context;
@@ -42,7 +42,7 @@ namespace Mentoring.BL
             return null;
         }
 
-         async Task<byte[]?> IBusinessLogic.GetImageById(int id)
+         async Task<byte[]?> ICategoryService.GetImageById(int id)
         {
             byte[]? imageData = null;
             if (_hddCache.TryGetValue(id, out imageData))

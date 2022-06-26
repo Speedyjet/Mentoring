@@ -2,7 +2,7 @@
 
 namespace Mentoring.BL
 {
-    public interface IBusinessLogic
+    public interface ICategoryService
     {
         public Task<IList<Category>> GetCategories();
         public Task<Category> GetCategory(int? id);
