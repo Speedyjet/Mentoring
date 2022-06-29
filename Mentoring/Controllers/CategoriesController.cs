@@ -9,12 +9,12 @@ namespace Mentoring.Controllers
     public class CategoriesController : Controller
     {
         private readonly IConfiguration _configuration;
-        private readonly IBusinessLogic _businessLogic;
+        private readonly ICategoryService _categoryService;
         private readonly ILogger<CategoriesController> _logger;
 
-        public CategoriesController(IBusinessLogic businessLogic, IConfiguration configuration, NorthwindContext context, ILogger<CategoriesController> logger)
+        public CategoriesController(ICategoryService businessLogic, IConfiguration configuration, NorthwindContext context, ILogger<CategoriesController> logger)
         {
-            _businessLogic = businessLogic;
+            _categoryService = businessLogic;
             _configuration = configuration;
             _logger = logger;
             logger.LogInformation($"The application location is {configuration.GetValue<string>(WebHostDefaults.ContentRootKey)}");
@@ -25,19 +25,19 @@ namespace Mentoring.Controllers
         [ToBeLoggedFilter(true)]
         public async Task<IActionResult> Index()
         {
-            return View(await _businessLogic.GetCategories());
+            return View(await _categoryService.GetCategories());
         }
 
         // GET: Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _businessLogic.GetCategories() == null)
+            if (id == null || _categoryService.GetCategories() == null)
             {
                 _logger.Log(LogLevel.Warning, "Categories are empty");
                 return NotFound();
             }
 
-            var category = await _businessLogic.GetCategory(id);
+            var category = await _categoryService.GetCategory(id);
             if (category == null)
             {
                 _logger.Log(LogLevel.Warning, "Category not found");
@@ -62,7 +62,7 @@ namespace Mentoring.Controllers
         {
             if (ModelState.IsValid)
             {
-                _businessLogic.AddCategory(category);
+                await _categoryService.AddCategory(category);
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -71,13 +71,13 @@ namespace Mentoring.Controllers
         // GET: Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _businessLogic.GetCategories() == null)
+            if (id == null || _categoryService.GetCategories() == null)
             {
                 _logger.Log(LogLevel.Warning, "Cannot find category");
                 return NotFound();
             }
 
-            var category = await _businessLogic.GetCategory(id);
+            var category = await _categoryService.GetCategory(id);
             if (category == null)
             {
                 return NotFound();
@@ -92,13 +92,13 @@ namespace Mentoring.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CategoryId,CategoryName,Description,Picture")] CategoryDTO categoryDto)
         {
-            if (!_businessLogic.CategoryExists(id))
+            if (!_categoryService.CategoryExists(id))
             {
                 _logger.Log(LogLevel.Warning, "Cannot find category");
                 return NotFound();
             }
             
-            var currentCategory = await _businessLogic.GetCategory(id);
+            var currentCategory = await _categoryService.GetCategory(id);
             byte[]? imageData = null;
             using (var binaryReader = new BinaryReader(categoryDto.Picture.OpenReadStream()))
             {
@@ -111,7 +111,7 @@ namespace Mentoring.Controllers
                 try
                 {
 
-                    await _businessLogic.UpdateCategory(currentCategory);
+                    await _categoryService.UpdateCategory(currentCategory);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -133,18 +133,18 @@ namespace Mentoring.Controllers
 
         public async Task<byte[]> GetImageById(int id)
         {
-            return await _businessLogic.GetImageById(id);
+            return await _categoryService.GetImageById(id);
         }
 
         // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _businessLogic.GetCategories() == null)
+            if (id == null || _categoryService.GetCategories() == null)
             {
                 return NotFound();
             }
 
-            var category = await _businessLogic.GetCategory(id);
+            var category = await _categoryService.GetCategory(id);
             if (category == null)
             {
                 return NotFound();
@@ -158,14 +158,14 @@ namespace Mentoring.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_businessLogic.GetCategories() == null)
+            if (_categoryService.GetCategories() == null)
             {
                 return Problem("Entity set 'NorthwindContext.Categories'  is null.");
             }
-            var category = await _businessLogic.GetCategory(id);
+            var category = await _categoryService.GetCategory(id);
             if (category != null)
             {
-                await _businessLogic.RemoveCategory(category);
+                await _categoryService.RemoveCategory(category);
             }
             
             return RedirectToAction(nameof(Index));
@@ -181,7 +181,7 @@ namespace Mentoring.Controllers
 
         private bool CategoryExists(int id)
         {
-            return _businessLogic.CategoryExists(id);
+            return _categoryService.CategoryExists(id);
         }
     }
 }

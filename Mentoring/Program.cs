@@ -2,16 +2,21 @@ using Mentoring.Models;
 using Mentoring.BL;
 using Microsoft.EntityFrameworkCore;
 using Mentoring.Controllers;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 
 var builder = WebApplication.CreateBuilder(args);
     builder.Logging.AddLog4Net();
     builder.Services.AddDbContext<NorthwindContext>(options => options.UseSqlServer(
     builder.Configuration.GetSection("ConnectionStrings").Value));
-    builder.Services.AddControllersWithViews();
-    builder.Services.AddTransient<IBusinessLogic, BusinessLogic>();
+    builder.Services.AddControllersWithViews().AddRazorOptions(option =>
+    {
+        option.ViewLocationFormats.Add("/{0}.cshtml");
+    });
+    builder.Services.AddTransient<ICategoryService, CategoryService>();
     builder.Services.AddTransient<IHddCache, HddCache>();
 
-    var app = builder.Build();
+var app = builder.Build();
 
     if (!app.Environment.IsDevelopment())
     {
