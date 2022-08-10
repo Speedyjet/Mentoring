@@ -46,13 +46,13 @@ namespace Mentoring.BL
             return null;
         }
 
-         async Task<byte[]?> ICategoryService.GetImageById(int id)
+         public async Task<byte[]> GetImageById(int id)
         {
             _logger.LogInformation("getting image by id", id);
             byte[]? imageData = null;
             if (_hddCache.TryGetValue(id, out imageData))
             {
-                return imageData;
+                return imageData ?? new byte[0];
             }
             else
             {
@@ -79,6 +79,17 @@ namespace Mentoring.BL
             _logger.LogInformation("updating category", category);
             _context.Update(category);
             await _context.SaveChangesAsync();
+        }
+
+        public void UpdateImage(byte[] image, int id)
+        {
+            var currentImage = GetImageById(id).Result;
+            if (currentImage != null)
+            {
+                image.CopyTo(currentImage, 0);
+                _context.Update(currentImage);
+                _context.SaveChanges();
+            }
         }
     }
 }

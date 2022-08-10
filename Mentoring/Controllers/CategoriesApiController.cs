@@ -1,6 +1,8 @@
 ﻿using Mentoring.BL;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static System.Net.Mime.MediaTypeNames;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -31,6 +33,15 @@ namespace Mentoring.Controllers
         {
             _logger.LogInformation("Getting product information by id");
             return JsonConvert.SerializeObject(_categoryService.GetCategory(id).Result);
+        }
+
+        [HttpGet]
+        public string GetImage(int id) => _categoryService.GetImageById(id).Result.ToString() ?? String.Empty;
+
+        [HttpPost]
+        public void UpdateImage([FromBody]byte[] image, int id)
+        {
+            _categoryService.UpdateImage(image, id);
         }
     }
 }
