@@ -19,7 +19,10 @@ namespace Mentoring.Controllers
             _categoryService = categoryService;
             _logger = logger;
         }
-        // GET: api/<CategoriesApiController>
+        /// <summary>
+        /// Returns the list of products
+        /// </summary>
+        /// <returns>the list of products</returns>
         [HttpGet]
         public string Get()
         {
