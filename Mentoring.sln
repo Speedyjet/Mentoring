@@ -5,7 +5,14 @@ VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mentoring", "Mentoring\Mentoring.csproj", "{85381E96-8A3B-4E80-91B5-3A2F929D6199}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject\TestProject.csproj", "{387F6057-D966-43D2-91A6-4AAA97144BDE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProject", "TestProject\TestProject.csproj", "{387F6057-D966-43D2-91A6-4AAA97144BDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataFetcher", "DataFetcher\DataFetcher.csproj", "{510D76CE-6103-47E6-A7F6-82027A504A42}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0389B31D-AC22-4DF7-93E2-5C9A126880A9}"
+	ProjectSection(SolutionItems) = preProject
+		DataFetcher.html = DataFetcher.html
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +28,10 @@ Global
 		{387F6057-D966-43D2-91A6-4AAA97144BDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{387F6057-D966-43D2-91A6-4AAA97144BDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{387F6057-D966-43D2-91A6-4AAA97144BDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{510D76CE-6103-47E6-A7F6-82027A504A42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{510D76CE-6103-47E6-A7F6-82027A504A42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{510D76CE-6103-47E6-A7F6-82027A504A42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{510D76CE-6103-47E6-A7F6-82027A504A42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

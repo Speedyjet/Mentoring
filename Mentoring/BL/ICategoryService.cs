@@ -10,6 +10,7 @@ namespace Mentoring.BL
         public Task UpdateCategory(Category category);
         public Task RemoveCategory(Category category);
         bool CategoryExists(int id);
-        Task<byte[]> GetImageById(int id);
+        public Task<byte[]> GetImageById(int id);
+        void UpdateImage(byte[] image, int id);
     }
 }
