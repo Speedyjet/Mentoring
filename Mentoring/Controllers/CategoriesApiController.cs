@@ -39,12 +39,11 @@ namespace Mentoring.Controllers
         }
 
         [HttpGet]
-        public string GetImage(int id) => _categoryService.GetImageById(id).Result.ToString() ?? String.Empty;
+        [Route("api/GetImage")]
+        public string GetImage(int id) => _categoryService.GetImageById(id).Result.ToString() ?? string.Empty;
 
         [HttpPost]
-        public void UpdateImage([FromBody]byte[] image, int id)
-        {
-            _categoryService.UpdateImage(image, id);
-        }
+        [Route("api/UpdateImage")]
+        public void UpdateImage([FromBody]byte[] image, int id) => _categoryService.UpdateImage(image, id);
     }
 }

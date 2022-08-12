@@ -41,11 +41,6 @@ var app = builder.Build();
         defaults: new { controller = "Categories", action = "GetImageById", });
 
     app.MapControllerRoute(
-        name: "api",
-        pattern: "api/CategoriesApiController",
-        defaults: new { controller = "CategoriesApiController", action="Get"});
-
-    app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}");
 
