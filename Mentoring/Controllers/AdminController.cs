@@ -11,7 +11,8 @@ namespace Mentoring.Controllers
         {
             _userService = userService;
         }
-        [Authorize(Roles ="Administrator")]
+        [Authorize(Roles = "Administrator")]
+        [Route("/Users")]
         public IActionResult Index()
         {
             var usersList = _userService.GetUsers();
