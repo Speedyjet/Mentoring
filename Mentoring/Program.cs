@@ -19,7 +19,8 @@ builder.Configuration.GetSection("ConnectionStrings").Value));
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<NorthwindContext>();
 builder.Services.AddSwaggerGen();
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages()
+    .AddRazorRuntimeCompilation();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
@@ -80,6 +81,7 @@ else
     app.UseSwaggerUI();
 }
 app.MapRazorPages();
+app.UseWebOptimizer();
 app.UseStaticFiles();
 
 app.UseRouting();
